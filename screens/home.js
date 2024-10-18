@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput } from 'react-native';
 export default function Home(props) {
     const { navigation, route } = props
-    const { navigate, goBack } = navigation
+    const { navigate } = navigation
     const [name, setName] = useState('');
 
     return (

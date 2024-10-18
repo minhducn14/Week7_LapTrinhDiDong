@@ -33,33 +33,39 @@ const Item = ({ title, id, onEdit, onDelete }) => (
 export default function Display(props) {
     const { navigation, route } = props;
     const { name } = route.params;
-    console.log(`Name: ${name}`);
+    const { navigate } = navigation
     const [searchText, setSearchText] = useState('')
 
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const url = 'https://670b38d1ac6860a6c2cb7013.mockapi.io/todos';
 
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(url);
+            const result = await response.json();
+            setData(result);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            Alert.alert("Error", "Failed to fetch data.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(url);
-                const result = await response.json();
-                setData(result);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                Alert.alert("Error", "Failed to fetch data.");
-            } finally {
-                setLoading(false);
-            }
-        };
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchData();
+        });
 
         fetchData();
-    }, []);
+
+        return unsubscribe;
+    }, [navigation]);
 
     const handleEdit = (id) => {
         console.log(`Editing ${id}`);
-        // Implement your edit logic here
     };
 
     const handleDelete = (id) => {
@@ -138,7 +144,13 @@ export default function Display(props) {
                 keyExtractor={item => item.id.toString()}
             />
 
-            <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+            <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20 }}
+                onPress={() => {
+                    navigate('Add', {
+                        name: name,
+                    })
+                }}
+            >
                 <Image source={require('../assets/add.png')} />
             </TouchableOpacity>
 
