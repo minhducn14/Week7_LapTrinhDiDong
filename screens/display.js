@@ -33,7 +33,7 @@ const Item = ({ title, id, onEdit, onDelete }) => (
 export default function Display(props) {
     const { navigation, route } = props;
     const { name } = route.params;
-    const { navigate } = navigation
+    const { navigate, goBack } = navigation
     const [searchText, setSearchText] = useState('')
 
     const [data, setData] = useState([]);
@@ -64,9 +64,38 @@ export default function Display(props) {
         return unsubscribe;
     }, [navigation]);
 
-    const handleEdit = (id) => {
-        console.log(`Editing ${id}`);
+    const handleEdit = async (id) => {
+        Alert.prompt(
+            "Edit Item " + id,
+            "Enter new title:",
+            async (newTitle) => {
+                if (newTitle && newTitle.trim()) {
+                    const dataUpdate = { status: false, title: newTitle };
+                    const urlUpdate = `${url}/${id}`;
+                    try {
+                        const response = await fetch(urlUpdate, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(dataUpdate),
+                        });
+                        if (response.ok) {
+                            fetchData();
+                        } else {
+                            Alert.alert("Error", "Failed to edit item.");
+                        }
+                    } catch (error) {
+                        console.error("Error editing item:", error);
+                        Alert.alert("Error", "Failed to edit item.");
+                    }
+                }
+            },
+            'plain-text'
+        );
     };
+
+
 
     const handleDelete = (id) => {
         Alert.alert(

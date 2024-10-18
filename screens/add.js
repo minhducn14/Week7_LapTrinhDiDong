@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, Alert } fro
 
 export default function Add(props) {
     const { navigation, route } = props;
+    const { navigate, goBack } = navigation;
     const { name } = route.params;
     const [addText, setAddText] = useState('');
 
